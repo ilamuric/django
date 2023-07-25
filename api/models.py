@@ -63,7 +63,7 @@ class FinanceResource(ModelResource):
             start_time_str, end_time_str = timeslot.split('-')
             start_time = datetime.strptime(start_time_str, "%H:%M")
             end_time = datetime.strptime(end_time_str, "%H:%M")
-            dates = map(parse, dates)
+            dates = set(map(parse, dates))
             for date in dates:
                 # Добавляем временной промежуток к дате
                 start_datetime = datetime.combine(date, start_time.time())
