@@ -21,7 +21,7 @@ class Finances(models.Model):
     net = models.FloatField()    # 'чистые'
     def __str__(self) -> str:
         formatted_datetime = self.datetime.strftime('%Y-%m-%d %H:%M')
-        return f'{formatted_datetime}  {self.gross}$  {self.tax}$  {self.net}$ '
+        return f'Дата:{formatted_datetime} Грязные: {self.gross}$  Налог: {self.tax}$  Чистые: {self.net}$ '
 
 class FinanceResource(ModelResource):
     class Meta:
