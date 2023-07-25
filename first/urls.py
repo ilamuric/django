@@ -27,15 +27,5 @@ api.register(finance_resource)
 
 urlpatterns = [
 path('admin/', admin.site.urls),
-path('shop/',include('shop.urls')),
- path('convert_app/', include('convert_app.urls')),
 path('api/', include(api.urls)) # Убедитесь, что включили URL-маршруты ресурса
- 
-
-
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]

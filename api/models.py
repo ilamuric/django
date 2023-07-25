@@ -9,6 +9,7 @@ from django.urls import re_path
 from tastypie.utils import trailing_slash
 from tastypie.authorization import Authorization
 from .autification import CustomAuthentication
+from django.contrib import admin
 
 
 
@@ -19,15 +20,13 @@ class Finances(models.Model):
     gross = models.FloatField()  # 'грязные'
     tax = models.FloatField()    # 'налог'
     net = models.FloatField()    # 'чистые'
-    def __str__(self) -> str:
-        formatted_datetime = self.datetime.strftime('%Y-%m-%d %H:%M')
-        return f'Дата:{formatted_datetime} Грязные: {self.gross}$  Налог: {self.tax}$  Чистые: {self.net}$ '
+   
 
 class FinanceResource(ModelResource):
     class Meta:
         queryset = Finances.objects.all()
         resource_name = 'finances'
-        allowed_methods = ['get', 'post']
+        allowed_methods = ['get', 'post','create']
         use_in = 'list'
         authentication = CustomAuthentication()
         authorization = Authorization()
@@ -75,5 +74,34 @@ class FinanceResource(ModelResource):
                 columns_to_search = column.split(',')
                 query_result = list(Finances.objects.filter(queries).values(*columns_to_search))
                 result.extend(query_result)
+                
+            sums = {}
+        for item in result:
+            for col in columns_to_search:
+                    if col not in sums:
+                        sums[col] = 0
+                    sums[col] += float(item.get(col, 0))
+        return self.create_response(request, {'result': sums})
 
-        return self.create_response(request, {'result': result})
+
+
+
+@admin.register(Finances)
+class FinancesAdmin(admin.ModelAdmin):
+    list_display = ('formatted_datetime', 'display_gross', 'display_tax', 'display_net')
+    
+    def formatted_datetime(self, obj):
+        return obj.datetime.strftime('%Y-%m-%d %H:%M')
+    formatted_datetime.short_description = 'Дата'
+    
+    def display_gross(self, obj):
+        return f'{obj.gross}$'
+    display_gross.short_description = 'Грязные'
+    
+    def display_tax(self, obj):
+        return f'{obj.tax}$'
+    display_tax.short_description = 'Налог'
+    
+    def display_net(self, obj):
+        return f'{obj.net}$'
+    display_net.short_description = 'Чистые'
