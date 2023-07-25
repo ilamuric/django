@@ -10,12 +10,18 @@ from tastypie.utils import trailing_slash
 from tastypie.authorization import Authorization
 from .autification import CustomAuthentication
 
+
+
+
+
 class Finances(models.Model):
     datetime = models.DateTimeField()
     gross = models.FloatField()  # 'грязные'
     tax = models.FloatField()    # 'налог'
     net = models.FloatField()    # 'чистые'
-
+    def __str__(self) -> str:
+        formatted_datetime = self.datetime.strftime('%Y-%m-%d %H:%M')
+        return f'{formatted_datetime}  {self.gross}$  {self.tax}$  {self.net}$ '
 
 class FinanceResource(ModelResource):
     class Meta:
@@ -25,6 +31,7 @@ class FinanceResource(ModelResource):
         use_in = 'list'
         authentication = CustomAuthentication()
         authorization = Authorization()
+      
 
 
     def prepend_urls(self):
